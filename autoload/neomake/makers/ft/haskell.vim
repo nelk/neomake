@@ -3,12 +3,29 @@ function! neomake#makers#ft#haskell#EnabledMakers()
     return ['ghcmod_check', 'ghcmod_lint']
 endfunction
 
+function! neomake#makers#ft#haskell#hdevtools()
+    return {
+        \ 'exe': 'hdevtools',
+        \ 'args': ['check'],
+        \ 'errorformat':
+            \ '%-G%\s%#,' .
+            \ '%f:%l:%c:%trror: %m,' .
+            \ '%f:%l:%c:%tarning: %m,'.
+            \ '%f:%l:%c: %trror: %m,' .
+            \ '%f:%l:%c: %tarning: %m,' .
+            \ '%f:%l:%c:%m,' .
+            \ '%E%f:%l:%c:,' .
+            \ '%Z%m'
+        \ }
+endfunction
+
 function! s:ghcmod_maker(args, default_err_warn_type)
     " This filters out newlines, which is what neovim gives us instead of the
     " null bytes that ghc-mod sometimes spits out.
     let mapexpr = 'substitute(v:val, "\n", "", "g")'
     return {
         \ 'exe': 'ghc-mod',
+        \ 'args': ['check'],
         \ 'mapexpr': mapexpr,
         \ 'args': a:args,
         \ 'errorformat':
@@ -36,6 +53,6 @@ function! neomake#makers#ft#haskell#hlint()
         \ 'errorformat':
             \ '%E%f:%l:%v: Error: %m,' .
             \ '%W%f:%l:%v: Warning: %m,' .
-            \ '%W%m'
+            \ '%C%m'
         \ }
 endfunction
